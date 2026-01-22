@@ -240,8 +240,7 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
     const config = await this.getConfig();
     const client = await this.getClient({ clientId });
 
-    return `
-[Interface]
+    return `[Interface]
 PrivateKey = ${client.privateKey ? `${client.privateKey}` : 'REPLACE_ME'}
 Address = ${client.address}/32
 ${WG_DEFAULT_DNS ? `DNS = ${WG_DEFAULT_DNS}\n` : ''}\
@@ -266,15 +265,15 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
 
   buildAwgExtrasFromConfig(config) {
     return {
-      Jc: config.server.jc,
-      Jmin: config.server.jmin,
-      Jmax: config.server.jmax,
-      S1: config.server.s1,
-      S2: config.server.s2,
-      H1: config.server.h1,
-      H2: config.server.h2,
-      H3: config.server.h3,
-      H4: config.server.h4
+      Jc: `${config.server.jc}`,
+      Jmin: `${config.server.jmin}`,
+      Jmax: `${config.server.jmax}`,
+      S1: `${config.server.s1}`,
+      S2: `${config.server.s2}`,
+      H1: `${config.server.h1}`,
+      H2: `${config.server.h2}`,
+      H3: `${config.server.h3}`,
+      H4: `${config.server.h4}`
     };
   }
 
@@ -315,6 +314,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
         {
           container: 'amnezia-awg',
           awg: {
+            isThirdPartyConfig: true,
             transport_proto: 'udp',
             port: `${WG_CONFIG_PORT}`,
 

@@ -313,9 +313,9 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
     return {
       containers: [
         {
-          isThirdPartyConfig: true,
           container: 'amnezia-awg',
           awg: {
+            isThirdPartyConfig: true,
             transport_proto: 'udp',
             port: `${WG_CONFIG_PORT}`,
 

@@ -1,12 +1,12 @@
 'use strict';
 
 const fs = require('node:fs/promises');
-const path = require('path');
+const path = require('node:path');
 const debug = require('debug')('WireGuard');
 const crypto = require('node:crypto');
 const QRCode = require('qrcode');
-const CRC32 = require('crc-32');
 const { Buffer } = require('node:buffer');
+const zlib = require('node:zlib');
 
 const Util = require('./Util');
 const ServerError = require('./ServerError');
@@ -446,7 +446,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
   async generateOneTimeLink({ clientId }) {
     const client = await this.getClient({ clientId });
     const key = `${clientId}-${Math.floor(Math.random() * 1000)}`;
-    client.oneTimeLink = Math.abs(CRC32.str(key)).toString(16);
+    client.oneTimeLink = zlib.crc32(key).toString(16);
     client.oneTimeLinkExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     client.updatedAt = new Date();
     await this.saveConfig();

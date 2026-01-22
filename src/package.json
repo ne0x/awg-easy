@@ -17,7 +17,6 @@
   "dependencies": {
     "basic-auth": "^2.0.1",
     "bcryptjs": "^3.0.3",
-    "crc-32": "^1.2.2",
     "debug": "^4.4.3",
     "express-session": "^1.18.2",
     "h3": "^1.15.5",
@@ -35,6 +34,6 @@
     ]
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.2"
   }
 }

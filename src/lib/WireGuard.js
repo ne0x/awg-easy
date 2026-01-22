@@ -6,6 +6,7 @@ const debug = require('debug')('WireGuard');
 const crypto = require('node:crypto');
 const QRCode = require('qrcode');
 const CRC32 = require('crc-32');
+const { Buffer } = require('node:buffer');
 
 const Util = require('./Util');
 const ServerError = require('./ServerError');
@@ -263,11 +264,107 @@ PersistentKeepalive = ${WG_PERSISTENT_KEEPALIVE}
 Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
   }
 
+  buildAwgExtrasFromConfig(config) {
+    return {
+      Jc: config.server.jc,
+      Jmin: config.server.jmin,
+      Jmax: config.server.jmax,
+      S1: config.server.s1,
+      S2: config.server.s2,
+      H1: config.server.h1,
+      H2: config.server.h2,
+      H3: config.server.h3,
+      H4: config.server.h4
+    };
+  }
+
+  buildDnsPair(dnsLine) {
+    const parts = String(dnsLine || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return { dns1: parts[0] || '', dns2: parts[1] || '' };
+  }
+
+  async getAmneziaClientConfiguration({ clientId }) {
+    const configText = await this.getClientConfiguration({ clientId });
+    const config = await this.getConfig();
+    const client = await this.getClient({ clientId });
+    const awgExtras = this.buildAwgExtrasFromConfig(config);
+    const { dns1, dns2 } = this.buildDnsPair(WG_DEFAULT_DNS);
+
+    const lastConfigObj = {
+      ...awgExtras,
+      client_ip: client.address,
+      client_priv_key: client.privateKey || '',
+
+      // Seen in community scripts; keep for compatibility.
+      client_pub_key: '0',
+
+      psk_key: client.preSharedKey || '',
+      server_pub_key: config.server.publicKey,
+
+      hostName: WG_HOST,
+      port: WG_CONFIG_PORT,
+
+      config: configText
+    };
+
+    return {
+      containers: [
+        {
+          container: 'amnezia-awg',
+          awg: {
+            transport_proto: 'udp',
+            port: `${WG_CONFIG_PORT}`,
+
+            ...awgExtras,
+
+            // IMPORTANT: string, not object
+            last_config: JSON.stringify(lastConfigObj)
+          }
+        }
+      ],
+
+      defaultContainer: 'amnezia-awg',
+
+      description: `${client.name} | ${client.address}`,
+
+      hostName: `${WG_HOST}`,
+      dns1: dns1,
+      dns2: dns2
+    };
+  }
+
+  buildAmneziaQrPack(amneziaConfig) {
+    const jsonText = JSON.stringify(amneziaConfig);
+
+    // Observed working QR wrapper:
+    // [0..3]  magic/version (0x07C00100)
+    // [4..7]  zlib_len + 4
+    // [8..11] uncompressed_len
+    // [12..]  zlib(deflate) bytes (starts with 78 DA typically)
+    const plain = Buffer.from(jsonText, 'utf8');
+    const z = zlib.deflateSync(plain);
+
+    const MAGIC = 0x07c00100;
+    const header = Buffer.allocUnsafe(12);
+    header.writeUInt32BE(MAGIC, 0);
+    header.writeUInt32BE(z.length + 4, 4);
+    header.writeUInt32BE(plain.length, 8);
+
+    const packed = Buffer.concat([header, z]);
+
+    return packed.toString('base64url');
+  }
+
   async getClientQRCodeSVG({ clientId }) {
-    const config = await this.getClientConfiguration({ clientId });
+    const amneziaConfig= await this.getAmneziaClientConfiguration({ clientId });
+    const payload = this.buildAmneziaQrPack(JSON.stringify(amneziaConfig));
+
     return QRCode.toString(config, {
       type: 'svg',
-      width: 512,
+      width: 1024,
     });
   }
 

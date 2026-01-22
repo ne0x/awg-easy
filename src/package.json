@@ -1,6 +1,6 @@
 {
   "release": {
-    "version": "0.2.15"
+    "version": "0.2.16"
   },
   "name": "wg-easy",
   "version": "1.0.1",
@@ -16,18 +16,18 @@
   "license": "CC BY-NC-SA 4.0",
   "dependencies": {
     "basic-auth": "^2.0.1",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "crc-32": "^1.2.2",
-    "debug": "^4.3.7",
-    "express-session": "^1.18.0",
-    "h3": "^1.12.0",
+    "debug": "^4.4.3",
+    "express-session": "^1.18.2",
+    "h3": "^1.15.5",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.9",
-    "eslint-config-athom": "^3.1.3",
-    "nodemon": "^3.1.4",
-    "tailwindcss": "^3.4.10"
+    "@tailwindcss/forms": "^0.5.11",
+    "eslint-config-athom": "^3.1.5",
+    "nodemon": "^3.1.11",
+    "tailwindcss": "^3.4.19"
   },
   "nodemonConfig": {
     "ignore": [

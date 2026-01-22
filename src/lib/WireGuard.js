@@ -360,9 +360,9 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
 
   async getClientQRCodeSVG({ clientId }) {
     const amneziaConfig= await this.getAmneziaClientConfiguration({ clientId });
-    const payload = this.buildAmneziaQrPack(JSON.stringify(amneziaConfig));
+    const payload = this.buildAmneziaQrPack(amneziaConfig);
 
-    return QRCode.toString(config, {
+    return QRCode.toString(payload, {
       type: 'svg',
       width: 1024,
     });

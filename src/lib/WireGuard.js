@@ -305,7 +305,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
       server_pub_key: config.server.publicKey,
 
       hostName: WG_HOST,
-      port: WG_CONFIG_PORT,
+      port: +WG_CONFIG_PORT,
 
       config: configText
     };
@@ -313,6 +313,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
     return {
       containers: [
         {
+          isThirdPartyConfig: true,
           container: 'amnezia-awg',
           awg: {
             transport_proto: 'udp',
@@ -328,7 +329,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
 
       defaultContainer: 'amnezia-awg',
 
-      description: `${client.name} | ${client.address}`,
+      description: `Server ${client.name}`,
 
       hostName: `${WG_HOST}`,
       dns1: dns1,
@@ -364,7 +365,7 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
 
     return QRCode.toString(payload, {
       type: 'svg',
-      width: 1024,
+      width: 640,
     });
   }
 

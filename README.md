@@ -148,3 +148,12 @@ Changes by Stanislav Karakovskii:
 - Raised NodeJs build version
 - Fixes to docker-compose.yml
 - Release number now matches amneziawg-go version
+
+---
+Then based on [awg-easy](https://github.com/YokiToki/awg-easy) by Stanislav Karakovskii.
+
+Changes by ne0x:
+- Updated amneziawg-go up to 0.2.16
+- Fixed: /32 client Address
+- Implemented AmneziaVPN App QR code generator (now incompatible with WG App)
+- Minor style changes
